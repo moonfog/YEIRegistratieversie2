@@ -114,6 +114,47 @@ def makeYears():
 		years.append(year)
 		year = year - 1
 ######################################################################
+## validator voor rijksregisternummer ################################
+def checkNationalNumber(national_number):
+   isRijksRegisterNummer = False
+   rr = national_number
+
+   if(len(rr) == 11) :
+      if(int(rr[0][0]) == 0):
+       rr = ''.join(('2',rr))
+      else :
+       rr = rr
+
+      checkDigit = int(rr[-2:])
+      rr = rr[:-2]
+      rr_rest97 = int(float(rr) / 97.0)
+
+      rr_maal97 = rr_rest97 * 97
+
+      testcijfer = int(rr) - rr_maal97
+
+      if ((97 - testcijfer) == checkDigit):
+            isRijksRegisterNummer = True
+            return isRijksRegisterNummer
+      else :
+            return isRijksRegisterNummer
+
+   else:
+      return isRijksRegisterNummer
+
+class IS_NATIONALNUMBER():
+    def __init__(self, error_message="Foutief nummer"):
+        self.error_message = error_message
+
+    def __call__(self, nummer):
+        error = None
+        value = checkNationalNumber(nummer)
+        if not value == True :
+            error = self.error_message
+        return (nummer, error)
+#####################################################################
+
+
 
 makeYears()
 
@@ -123,15 +164,28 @@ db.define_table('guest',
 	Field('birth_year','integer',notnull=True,label=T('Birth year')),
 	Field('sex',notnull=True,label=T('Sex')),
 	Field('national_number',notnull=True,label=T('National number')),
+    Field('gsmnummer',label=T('GSM')),
+    Field('email',notnull=False,label=T('Email')),
 	Field('registration_date','date',default=request.now,label=T('Registration date')),
-	Field('registrator',db.auth_user,notnull=True,label=T('Registered by')),
+	Field('registrator','reference auth_user',default=auth.user_id,label=T('Registered by')),
 	Field('age',compute=lambda r: (datetime.datetime.now().year) - int(r['birth_year']),label=T('Age')),
 	format = '%(first_name)s %(family_name)s')
 db.guest.birth_year.requires=IS_IN_SET(years,zero=T('Choose One'),error_message = T('Choose a year from the list'))
 db.guest.sex.requires=IS_IN_SET(["man","vrouw"],zero=T('Choose One'))
+db.guest.national_number.requires=IS_NATIONALNUMBER()
+#als je require gebruikt kan niet leeg zijn
+#db.guest.email.requires=IS_EMAIL(error_message='invalid email')
+
+db.define_table('difficultie',
+    Field('registrator','reference auth_user',default=auth.user_id,label=T('Registred by')),
+    Field('guest',db.guest,notnull=True,label=T('Guest')),
+    Field('subject',notnull=True,label=T('Difficultie')), #vaste waarden van maken
+    Field('story','text',label=T('Story')),
+    format='%(difficultie)s')
+db.difficultie.subject.requires=IS_IN_SET(["administratie","financieel","middelengebruik","familiaal","huisvesting","juridisch","ander"])
 
 db.define_table('talk',
-    Field('registrator',db.auth_user,notnull=True,label=T('Registered by')),
+    Field('registrator','reference auth_user',default=auth.user_id,label=T('Registered by')),
     Field('guest',db.guest,notnull=True,label=T('Guest')),
     Field('date_talk','date',default=request.now,label=T('Date Talk')),
     Field('type_of_talk',notnull=True,label=T('Type of talk')),
@@ -142,20 +196,26 @@ db.define_table('talk',
 db.talk.type_of_talk.requires=IS_IN_SET(["intake","trajectbegeleiding","evaluatie"])
 
 db.define_table('competence',
+   Field('name',label=T('Name')),
+   format= '%(name)s')
+
+db.define_table('guest_competence',
     Field('guest',db.guest,notnull=True,label=T('Guest')),
-    Field('state_of_competence',notnull=True,label=T('State')),
-    Field('competence',notnull=True,label=T('Competence')),
+    Field('state_of_competence',label=T('State')),
+    Field('competence',db.competence,label=T('Competence')),
     Field('type_of_competence',label=T('Type of competence')),
+    Field('level_of_competence',label=T('Level of competence')),
     format = '%(competence)s')
 
-db.competence.state_of_competence.requires=IS_IN_SET(["kan","wil"])
-db.competence.type_of_competence.requires=IS_IN_SET(["generiek","technisch"])
+db.guest_competence.state_of_competence.requires=IS_IN_SET(["kan","wil"])
+db.guest_competence.type_of_competence.requires=IS_IN_SET(["generiek","technisch"])
 
 db.define_table('things_to_do',
+    Field('registrator','reference auth_user',default=auth.user_id,label=T('Registered by')),
     Field('guest',db.guest,notnull=True,label=T('Guest')),
     Field ('guidance',label=T('Guidance')),
     Field('startdate','date',default=request.now,notnull=True,label=T('startdate')),
     Field('date_to_aim', 'date', label=('Aimdate')),
-    #Field('competence',db.competence, label=('Competence')),
+    Field('competence',db.competence, label=('Competence')),
     Field('story','text',label=T('Story')),
     Field('success','boolean',label=T('Success')))

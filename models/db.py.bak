@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import datetime
 #########################################################################
 ## This scaffolding model makes your app work on Google App Engine too
 ## File is released under public domain and you can use without limitations
@@ -60,6 +60,7 @@ plugins = PluginManager()
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
 
+
 ## configure email
 mail = auth.settings.mailer
 mail.settings.server = 'logging' if request.is_local else myconf.take('smtp.server')
@@ -90,3 +91,76 @@ auth.settings.reset_password_requires_verification = True
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
+
+#########################################################################
+#defining some sets i need
+years = []
+guest_errors = None
+guest_errors = []
+
+talk_errors = None
+talk_errors = []
+
+competence_errors = None
+competence_errors = []
+#########################################################################
+
+#####some methods i use#################################################
+def makeYears():
+	i = 0
+	year = datetime.date.today().year
+	while i < 100:
+		i = i + 1
+		years.append(year)
+		year = year - 1
+######################################################################
+
+makeYears()
+
+db.define_table('guest',
+	Field('first_name',notnull=True,label=T('Firstname')),
+	Field('family_name',notnull=True,label=T('Familyname')),
+	Field('birth_year','integer',notnull=True,label=T('Birth year')),
+	Field('sex',notnull=True,label=T('Sex')),
+	Field('national_number',notnull=True,label=T('National number')),
+	Field('registration_date','date',default=request.now,label=T('Registration date')),
+	Field('registrator',db.auth_user,notnull=True,label=T('Registered by')),
+	Field('age',compute=lambda r: (datetime.datetime.now().year) - int(r['birth_year']),label=T('Age')),
+	format = '%(first_name)s %(family_name)s')
+db.guest.birth_year.requires=IS_IN_SET(years,zero=T('Choose One'),error_message = T('Choose a year from the list'))
+db.guest.sex.requires=IS_IN_SET(["man","vrouw"],zero=T('Choose One'))
+
+db.define_table('talk',
+    Field('registrator',db.auth_user,notnull=True,label=T('Registered by')),
+    Field('guest',db.guest,notnull=True,label=T('Guest')),
+    Field('date_talk','date',default=request.now,label=T('Date Talk')),
+    Field('type_of_talk',notnull=True,label=T('Type of talk')),
+    Field('story','text',label=T('Story')),
+    format ='%(type_of_talk)s'
+)
+
+db.talk.type_of_talk.requires=IS_IN_SET(["intake","trajectbegeleiding","evaluatie"])
+
+db.define_table('competence',
+   Field('name',label=T('Name')),
+   format= '%(name)s')
+
+db.define_table('guest_competence',
+    Field('guest',db.guest,notnull=True,label=T('Guest')),
+    Field('state_of_competence',label=T('State')),
+    Field('competence',db.competence,label=T('Competence')),
+    Field('type_of_competence',label=T('Type of competence')),
+    Field('level_of_competence',label=T('Level of competence')),
+    format = '%(competence)s')
+
+db.guest_competence.state_of_competence.requires=IS_IN_SET(["kan","wil"])
+db.guest_competence.type_of_competence.requires=IS_IN_SET(["generiek","technisch"])
+
+db.define_table('things_to_do',
+    Field('guest',db.guest,notnull=True,label=T('Guest')),
+    Field ('guidance',label=T('Guidance')),
+    Field('startdate','date',default=request.now,notnull=True,label=T('startdate')),
+    Field('date_to_aim', 'date', label=('Aimdate')),
+    Field('competence',db.competence, label=('Competence')),
+    Field('story','text',label=T('Story')),
+    Field('success','boolean',label=T('Success')))
