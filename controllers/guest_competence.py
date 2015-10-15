@@ -1,6 +1,7 @@
 @auth.requires_login()
 def new():
     session.guestID = request.vars.guestID
+    competences = db.guest_competence.guest == session.guestID
     form = SQLFORM(db.guest_competence)
     if form.process().accepted:
        response.flash = 'form accepted'

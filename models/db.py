@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
+
+session._language='nl'
+T.force(session._language)
 #########################################################################
 ## This scaffolding model makes your app work on Google App Engine too
 ## File is released under public domain and you can use without limitations
@@ -71,6 +74,14 @@ mail.settings.login = myconf.take('smtp.login')
 auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = True
+
+
+##redirect after login
+
+def redirect_after_login(form):
+  redirect(URL(r=request,c='guest',f='overview'))
+
+auth.settings.login_onaccept.append(redirect_after_login)
 
 #########################################################################
 ## Define your tables below (or better in another model file) for example
@@ -205,7 +216,7 @@ db.define_table('guest_competence',
     Field('competence',db.competence,label=T('Competence')),
     Field('type_of_competence',label=T('Type of competence')),
     Field('level_of_competence',label=T('Level of competence')),
-    format = '%(competence)s')
+    format = '%(guestcompetence)s')
 
 db.guest_competence.state_of_competence.requires=IS_IN_SET(["kan","wil"])
 db.guest_competence.type_of_competence.requires=IS_IN_SET(["generiek","technisch"])

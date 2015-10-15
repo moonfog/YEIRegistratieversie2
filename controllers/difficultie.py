@@ -17,6 +17,6 @@ def overview():
   session.guestID = request.args[0]
 
   difficulties =((db.difficultie.registrator == auth.user.id) & (db.difficultie.guest == session.guestID))
-  fields = [db.difficultie.guest,db.difficultie.subject,db.difficultie.story]
-  grid = SQLFORM.grid(difficulties, fields=fields ,user_signature=False )
+  fields = [db.difficultie.guest,db.difficultie.subject]
+  grid = SQLFORM.grid(difficulties, fields=fields ,deletable=False,editable=False,details=False,paginate=10,create=False,csv=False,links = [lambda row:A(T('Details'),_href=URL("difficultie","details",args=[row.id]))]user_signature=False)
   return dict(form=grid)

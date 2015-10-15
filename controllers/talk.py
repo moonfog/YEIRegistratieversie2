@@ -6,6 +6,9 @@ def new():
 
    if form.process().accepted:
         response.flash = 'form accepted'
+        
+        redirect(URL(r=request,f='overview'))
+
    elif form.errors :
         response.flash = 'form has errors'
    else:
@@ -15,26 +18,27 @@ def new():
 
 @auth.requires_login()
 def overview():
-	session.guestID = request.args[0]
+    if len(request.args)!= 0:
+	       #session.guestID = request.args[0]
 
-	talks = db.talk.guest == session.guestID
-	fields = [db.talk.date_talk, db.talk.type_of_talk]
+	       talks = db.talk.guest == session.guestID
+	       fields = [db.talk.date_talk, db.talk.type_of_talk]
 
-	form = SQLFORM.grid(talks,fields=fields,deletable=False,editable=False,details=False,paginate=10,create=False,csv=False,orderby=[~db.talk.date_talk],
-        links = [lambda row:A(T('Details'),_href=URL("talk","details",args=[row.id]))], user_signature=False)
+	       form = SQLFORM.grid(talks,fields=fields,deletable=False,editable=False,details=False,paginate=10,create=False,csv=False,orderby=[~db.talk.date_talk],
+           links = [lambda row:A(T('Details'),_href=URL("talk","details",args=[row.id]))], user_signature=False)
 
-	return dict(form=form)
+	       return dict(form=form)
 
 @auth.requires_login()
 def details():
-   session.talkID = request.args[0]
+   #session.talkID = request.args[0]
 
    record = db(db.talk.id==session.talkID).select().first()
-        #fields = ['name' , 'sex', 'birth_year','nationality','origin','education']
+        
    form = SQLFORM(db.talk,record,showid = False,submit_button = T('Update'))
 
    if form.process().accepted:
-       #session.guestID=form.vars.guest.id
+       session.guestID=form.vars.guest.id
        response.flash = T('form accepted')
        redirect(URL(r=request,f='overview'))
 

@@ -23,16 +23,20 @@ response.google_analytics_id = None
 #########################################################################
 ## this is the main application menu add/remove items as required
 #########################################################################
-
-response.menu = [
+if (auth.user==None):
+     response.menu = []
+else :
+  response.menu = [
     (T('Guests'), False, None,
      [(T('New'),False, URL('guest','new')),
       (T('Overview'),False,URL('guest','overview'))]),
     (T('Talks'), False, None,
      [(T('New'),False, URL('talk','new')),
-      (T('Overview'),False,URL('talk','overview'))]),
+      ]),
+    (T('Things To Do'), False, None,
+     [(T('New'),False, URL('things_to_do','new'))]),
 
-]
+  ]
 
 DEVELOPMENT_MENU = False
 

@@ -1,4 +1,4 @@
-timestamp: 2015-09-07T12:43:46.680000
+timestamp: 2015-10-08T11:35:40.858000
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -10,50 +10,50 @@ CREATE TABLE auth_user(
     registration_id CHAR(512)
 );
 success!
-timestamp: 2015-09-07T12:43:46.851000
+timestamp: 2015-10-08T11:35:41.090000
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2015-09-07T12:43:46.964000
+timestamp: 2015-10-08T11:35:41.371000
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-09-07T12:43:47.073000
+timestamp: 2015-10-08T11:35:41.636000
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
     name CHAR(512),
     table_name CHAR(512),
     record_id INTEGER
 );
 success!
-timestamp: 2015-09-07T12:43:47.176000
+timestamp: 2015-10-08T11:35:41.725000
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
     client_ip CHAR(512),
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     origin CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2015-09-07T12:43:47.278000
+timestamp: 2015-10-08T11:35:41.845000
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     created_on TIMESTAMP,
     service CHAR(512),
     ticket CHAR(512),
     renew CHAR(1)
 );
 success!
-timestamp: 2015-09-07T12:43:47.379000
+timestamp: 2015-10-08T11:35:41.947000
 CREATE TABLE guest(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(512) NOT NULL,
@@ -64,54 +64,54 @@ CREATE TABLE guest(
     gsmnummer CHAR(512),
     email CHAR(512),
     registration_date DATE,
-    registrator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    registrator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     age CHAR(512)
 );
 success!
-timestamp: 2015-09-07T12:43:47.490000
+timestamp: 2015-10-08T11:35:42.059000
 CREATE TABLE difficultie(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    registrator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    guest INTEGER REFERENCES guest (id) ON DELETE CASCADE,
+    registrator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    guest INTEGER REFERENCES guest (id) ON DELETE CASCADE  NOT NULL ,
     subject CHAR(512) NOT NULL,
     story TEXT
 );
 success!
-timestamp: 2015-09-07T12:43:47.588000
+timestamp: 2015-10-08T11:35:42.167000
 CREATE TABLE talk(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    registrator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    guest INTEGER REFERENCES guest (id) ON DELETE CASCADE,
+    registrator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    guest INTEGER REFERENCES guest (id) ON DELETE CASCADE  NOT NULL ,
     date_talk DATE,
     type_of_talk CHAR(512) NOT NULL,
     story TEXT
 );
 success!
-timestamp: 2015-09-07T12:43:47.708000
+timestamp: 2015-10-08T11:35:42.280000
 CREATE TABLE competence(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name CHAR(512)
 );
 success!
-timestamp: 2015-09-07T12:43:47.819000
+timestamp: 2015-10-08T11:35:42.472000
 CREATE TABLE guest_competence(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    guest INTEGER REFERENCES guest (id) ON DELETE CASCADE,
+    guest INTEGER REFERENCES guest (id) ON DELETE CASCADE  NOT NULL ,
     state_of_competence CHAR(512),
-    competence INTEGER REFERENCES competence (id) ON DELETE CASCADE,
+    competence INTEGER REFERENCES competence (id) ON DELETE CASCADE  ,
     type_of_competence CHAR(512),
     level_of_competence CHAR(512)
 );
 success!
-timestamp: 2015-09-07T12:43:47.921000
+timestamp: 2015-10-08T11:35:42.579000
 CREATE TABLE things_to_do(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    registrator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    guest INTEGER REFERENCES guest (id) ON DELETE CASCADE,
+    registrator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    guest INTEGER REFERENCES guest (id) ON DELETE CASCADE  NOT NULL ,
     guidance CHAR(512),
-    startdate DATE NOT NULL DEFAULT '2015-09-07',
+    startdate DATE NOT NULL DEFAULT '2015-10-08',
     date_to_aim DATE,
-    competence INTEGER REFERENCES competence (id) ON DELETE CASCADE,
+    competence INTEGER REFERENCES competence (id) ON DELETE CASCADE  ,
     story TEXT,
     success CHAR(1)
 );
