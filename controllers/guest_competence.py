@@ -14,7 +14,8 @@ def new():
 
 @auth.requires_login()
 def overview():
-	session.guestID = request.args[0]
+    if len(request.args)!=0:
+        session.guestID = request.args[0]
 
 	competences = db.guest_competence.guest == session.guestID
 	fields = [db.guest_competence.competence]
@@ -35,7 +36,7 @@ def details():
 
    if form.process().accepted:
         response.flash = T('form accepted')
-        redirect(URL(r=request,f='overview'))
+        redirect(URL(r=request,f='overview',args=[record.guest]))
 
    elif form.errors:
         response.flash = T('form has errors')

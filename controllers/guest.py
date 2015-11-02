@@ -29,7 +29,7 @@ def overview():
 
 @auth.requires_login()
 def details():
-    #if len(request.args)!=0:
+
     session.guestID = request.args[0]
 
     record = db(db.guest.id==session.guestID).select().first()

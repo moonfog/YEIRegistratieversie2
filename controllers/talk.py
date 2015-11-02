@@ -5,9 +5,9 @@ def new():
    form = SQLFORM(db.talk,fields=fields)
 
    if form.process().accepted:
-        response.flash = 'form accepted'
-        
-        redirect(URL(r=request,f='overview'))
+        response.flash = 'form accepted' #guest id meegeven uit form halen
+        guest = form.vars.guest
+        redirect(URL(r=request,f='overview',args=[guest]))
 
    elif form.errors :
         response.flash = 'form has errors'
@@ -19,7 +19,7 @@ def new():
 @auth.requires_login()
 def overview():
     if len(request.args)!= 0:
-	       #session.guestID = request.args[0]
+	       session.guestID = request.args[0]
 
 	       talks = db.talk.guest == session.guestID
 	       fields = [db.talk.date_talk, db.talk.type_of_talk]
@@ -31,16 +31,17 @@ def overview():
 
 @auth.requires_login()
 def details():
-   #session.talkID = request.args[0]
+   session.talkID = request.args[0]
 
    record = db(db.talk.id==session.talkID).select().first()
-        
+
+
    form = SQLFORM(db.talk,record,showid = False,submit_button = T('Update'))
 
    if form.process().accepted:
-       session.guestID=form.vars.guest.id
+
        response.flash = T('form accepted')
-       redirect(URL(r=request,f='overview'))
+       redirect(URL(r=request,f='overview',args=[record.guest]))
 
    elif form.errors:
         response.flash = T('form has errors')
