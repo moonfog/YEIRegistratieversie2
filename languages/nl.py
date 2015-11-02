@@ -32,6 +32,7 @@
 'Access Control': 'Toegangscontrole',
 'Add': 'Toevoegen',
 'Add Competence': 'Voeg competentie toe',
+'Add Difficultie': 'Add Difficultie',
 'Add Record': 'Add Record',
 'Add record to database': 'Add record to database',
 'Add this to the search as an AND term': 'Add this to the search as an AND term',
