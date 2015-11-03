@@ -36,7 +36,8 @@ def details():
         #fields = ['name' , 'sex', 'birth_year','nationality','origin','education']
     form = SQLFORM(db.guest,record,showid = False,submit_button = T('Update'))
     #form[0][0].append(TAG.INPUT(_value=T('Cancel'),_type="button",_onclick="window.location='%s';"%URL(r=request,f='overview')))
-
+    return dict(form=form)
+    
     if form.process().accepted:
         response.flash = T('form accepted')
         redirect(URL(r=request,f='overview'))
