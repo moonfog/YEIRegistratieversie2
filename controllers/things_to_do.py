@@ -1,4 +1,4 @@
-@auth.requires_login()
+﻿@auth.requires_login()
 def new():
     form = SQLFORM(db.things_to_do)
     if form.process().accepted:
@@ -27,12 +27,13 @@ def overview():
 
 @auth.requires_login()
 def details():
-   session.things_to_do = request.args[0]
+   session.things_to_do = (request.args[0])
 
    record = db(db.things_to_do.id==session.things_to_do).select().first()
 
 
    form = SQLFORM(db.things_to_do,record,showid = False,submit_button = T('Update'))
+   form.add_button('Back', URL('guest','overview'), _class="btn btn-primary")
 
    if form.process().accepted:
 
