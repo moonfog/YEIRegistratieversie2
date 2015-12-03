@@ -103,6 +103,7 @@
 'compiled application removed': 'gecompileerde applicatie verwijderd',
 'Components and Plugins': 'Components en Plugins',
 'Config.ini': 'Config.ini',
+'Confirm Password': 'Confirm Password',
 'contains': 'bevat',
 'Controller': 'Controller',
 'Controllers': 'Controllers',
